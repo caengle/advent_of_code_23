@@ -1,12 +1,14 @@
 #!/usr/bin/python3
 import re
+from word2number import w2n
 
 def get_num(line):
-    first_digit_pattern = re.compile(r'\d')
-    last_digit_pattern = re.compile(r'\d(?=\D*$)')
-    first_digit = first_digit_pattern.findall(line)
-    last_digit = last_digit_pattern.findall(line)
-    return int(first_digit[0]+last_digit[0])
+    first_digit_pattern = re.compile(r'(?=(\d|zero|one|two|three|four|five|six|seven|eight|nine))')
+    digits = first_digit_pattern.findall(line)
+    if len(digits) > 0:
+        return int(str(w2n.word_to_num(digits[0])) + str(w2n.word_to_num(digits[len(digits)-1])))
+    else: 
+        return 0
 
 
 def main():
