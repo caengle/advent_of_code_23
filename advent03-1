@@ -1,0 +1,77 @@
+#!/usr/bin/python3
+
+import re
+
+def get_numbers(line):
+    coordinates = []
+    pattern = re.compile(r'\d+')
+    numbers = pattern.findall(line)
+    i=0
+    for num in numbers:
+        if i == 0:
+            start = int(line.find(num))+1
+        else:
+            start = int(line[coordinates[i-1][1] + 1:].find(num)) + 1 + coordinates[i-1][1]
+        end = int(start) + len(num) - 1
+        coordinates.append((start, end))
+        i+=1
+    return (numbers, coordinates)
+
+def is_part(y, coordinates, engine):
+    x_start = coordinates[0]
+    x_end = coordinates[1]
+    pattern = re.compile(r'[^.0-9\n]')
+    adjacent_squares = ""
+    x0 = x_start
+    x1 = x_end
+    y0 = y
+    y1 = y
+
+    if y > 0:
+        y0 = y - 1
+    if y < len(engine) - 1:
+        y1 = y + 1
+    if x_start > 0:
+        x0 = x_start - 1
+    if x_end < len(engine[len(engine)-1]) - 1:
+        x1 = x_end + 1
+    # print("x_start: ", x_start)
+    # print("x_end: ", x_end)
+    # print("y ", y)
+    # print("x0: ", x0)
+    # print("x1: ", x1)
+    # print("y0: ", y0)
+    # print("y1: ", y1)
+    if y0 < y:
+        adjacent_squares += engine[y0][x0:x1+1]
+    if y1 > y:
+        adjacent_squares += engine[y1][x0:x1+1]
+    if x0 < x_start:
+        adjacent_squares += engine[y][x0]
+    if x1 > x_end:
+        adjacent_squares += engine[y][x1]
+    #print(adjacent_squares)
+
+    symbols = pattern.findall(adjacent_squares)
+    if len(symbols) != 0:
+        return True    
+    return False
+
+def main():
+    f = open("input03.txt", "r")
+    engine = f.readlines()
+    sum = 0
+    for i in range (0, len(engine)):
+        numbers = get_numbers(engine[i])
+        print(numbers)
+        for num, coor in zip(numbers[0], numbers[1]):
+            
+            if is_part(i, coor, engine):
+                sum += int(num)
+            else:
+                print(num)
+                print("Not a part\n")
+    print("sum = " + str(sum))
+
+if __name__ == "__main__":
+    main()
